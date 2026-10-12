@@ -1,0 +1,67 @@
+name: Daily Artificial Analysis Update
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  update-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Check updater logic
+        run: python3 scripts/update_aa.py --self-test
+
+      - name: Fetch API data only when authorized
+        id: refresh
+        env:
+          AA_API_KEY: ${{ secrets.AA_API_KEY }}
+          AA_PUBLIC_SHARING_ALLOWED: ${{ vars.AA_PUBLIC_SHARING_ALLOWED }}
+        shell: bash
+        run: |
+          echo "changed=false" >> "$GITHUB_OUTPUT"
+          if [[ -z "$AA_API_KEY" || "$AA_PUBLIC_SHARING_ALLOWED" != "true" ]]; then
+            echo "No public API refresh: needs AA_API_KEY secret and AA_PUBLIC_SHARING_ALLOWED=true (only if licensed)."
+            exit 0
+          fi
+          python3 scripts/update_aa.py
+          if git diff --quiet -- updates.js; then
+            echo "No score changes detected."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates.js
+          git commit -m "Refresh basic Artificial Analysis scores and task costs"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Configure GitHub Pages
+        if: steps.refresh.outputs.changed == 'true'
+        uses: actions/configure-pages@v5
+
+      - name: Upload updated site
+        if: steps.refresh.outputs.changed == 'true'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+      - name: Publish updated site
+        if: steps.refresh.outputs.changed == 'true'
+        id: deployment
+        uses: actions/deploy-pages@v4
