@@ -38,7 +38,7 @@ const colors={
 'GPT-6 Astra':'#2dd4bf','Claude Opus 5.5':'#e8a078','Gemini 3.8 Flash':'#b1d65b',
 'Gemini 4 Argon':'#4ade80','GLM-5.3':'#38bdf8','Muse Spark':'#f472b6','Kimi K3':'#a78bfa','Grok 4.6':'#c4b5fd'};
 const maxCost=Math.max(...rows.map(r=>r.cost)),minCost=Math.min(...rows.map(r=>r.cost));
-const logMin=Math.log10(minCost), logMax=Math.log10(6.3), maxLinear=6.3;
+const maxLinear=Math.max(6.3,Math.ceil(maxCost*10)/10), logMin=Math.log10(minCost), logMax=Math.log10(maxLinear);
 const el=id=>document.getElementById(id);
 const plot=el('plot'),metricHolder=el('metric-buttons'),familyHolder=el('family-buttons'),details=el('model-details'),body=el('data-table');
 const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
