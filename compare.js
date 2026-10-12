@@ -58,7 +58,7 @@ try {
   priorMetric=saved?.metric;
 }catch(e){}
 const url=new URL(location.href);
-if(url.searchParams.has('models'))priorSelection=url.searchParams.get('models').split(',').map(Number);
+if(url.searchParams.has('models')){const ids=url.searchParams.get('models').trim();priorSelection=ids?ids.split(',').filter(x=>x.trim()!=='').map(Number):[];}
 if(url.searchParams.has('m'))priorMetric=url.searchParams.get('m');
 if(!Array.isArray(priorSelection)){
   let fromExplorer;
