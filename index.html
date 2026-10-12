@@ -8,6 +8,7 @@
 <title>AI Benchmark Explorer — Intelligence vs Cost</title>
 <link rel="stylesheet" href="./style.css">
 <script defer src="./data.js"></script>
+<script defer src="./updates.js"></script>
 <script defer src="./app.js"></script>
 </head>
 <body>
@@ -61,7 +62,7 @@
     <div class="panel-title"><div><span class="section-kicker">04 / DATA</span><h2>Benchmark dataset</h2></div><div class="table-tools"><label class="search"><span>⌕</span><input id="search" placeholder="Search models…" aria-label="Search models" autocomplete="off"></label></div></div>
     <div class="table-scroll"><table><thead><tr><th>Model</th><th>Family</th><th>Cost / task</th><th id="score-column">Intelligence</th><th>Status</th></tr></thead><tbody id="data-table"></tbody></table></div>
   </section>
-  <footer class="footer"><strong>ModelScope</strong><span>Static benchmark snapshot, not live data. Values are rounded. Source: <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener noreferrer">Artificial Analysis ↗</a>. All calculations are client-side.</span><a href="https://github.com/mikesheer001-source/Repository-4" target="_blank" rel="noopener noreferrer">View source on GitHub ↗</a></footer>
+  <footer class="footer"><strong>ModelScope</strong><span><span id="data-status">Static benchmark snapshot; optional daily updates require setup.</span> Values are rounded. Source: <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener noreferrer">Artificial Analysis ↗</a>. All calculations are client-side.</span><a href="https://github.com/mikesheer001-source/Repository-4" target="_blank" rel="noopener noreferrer">View source on GitHub ↗</a></footer>
 </main>
 </body>
 </html>
