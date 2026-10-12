@@ -2,7 +2,23 @@
 'use strict';
 const payload=window.AI_BENCHMARK_DATA;
 if(!payload || !Array.isArray(payload.models)){document.body.insertAdjacentHTML('beforeend','<p>Benchmark data could not load.</p>');return;}
-const rows=payload.models.map((r,i)=>({id:i,name:r[0],family:r[1],cost:r[2],scores:r.slice(3)}));
+const live=window.AI_DAILY_UPDATES||{};
+const liveModels=live.models&&typeof live.models==='object'?live.models:{};
+let appliedUpdates=0;
+const rows=payload.models.map((r,i)=>{
+const model={id:i,name:r[0],family:r[1],cost:r[2],scores:r.slice(3)};
+const item=liveModels[model.name];
+if(item&&typeof item==='object'){
+let changed=false;
+if(typeof item.index==='number'&&Number.isFinite(item.index)&&item.index>=-100&&item.index<=200){model.scores[0]=item.index;changed=true;}
+if(typeof item.cost==='number'&&Number.isFinite(item.cost)&&item.cost>0&&item.cost<=1000){model.cost=item.cost;changed=true;}
+if(changed)appliedUpdates++;
+}
+return model;
+});
+const liveUpdated=appliedUpdates>0&&typeof live.updated_at==='string';
+const dataStatus=document.getElementById('data-status');
+if(dataStatus)dataStatus.textContent=liveUpdated?'Basic scores/costs refreshed '+live.updated_at.slice(0,10)+' UTC for '+appliedUpdates+' models. Detailed benchmarks are static.':'Static snapshot. Automatic updates await API key and redistribution rights.';
 const metrics=[
 {key:'index',short:'Intelligence',name:'Artificial Analysis Intelligence Index',unit:'Index points',desc:'Composite intelligence across component evaluations.',pos:0},
 {key:'briefcase',short:'AA-Briefcase',name:'AA-Briefcase v1.1',unit:'Elo-style score',desc:'Agentic knowledge work benchmark.',pos:1},
