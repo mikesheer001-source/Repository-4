@@ -223,7 +223,18 @@ const heading=document.createElement('h3');heading.textContent='All benchmark re
 const values=document.createElement('div');values.className='detail-values';
 metrics.forEach(mm=>{const label=document.createElement('span'),value=document.createElement('strong');label.textContent=mm.name;value.textContent=formatValue(score(r,mm),mm);values.append(label,value);});
 const link=document.createElement('a');link.className='detail-link';link.href='https://artificialanalysis.ai/';link.target='_blank';link.rel='noopener noreferrer';link.textContent='Explore Artificial Analysis ↗';
-details.append(name,sub,stats,heading,values,link);
+const compareLink=document.createElement('a');
+compareLink.className='detail-link';
+compareLink.style.cssText='display:inline-block;margin-top:12px;border:1px solid #3a638c;background:#183653;padding:8px 12px;border-radius:9px;font-weight:700;';
+compareLink.textContent='＋ Compare this model →';
+compareLink.addEventListener('click',()=>{
+  let previous=[];
+  try{previous=JSON.parse(localStorage.getItem('modelscope-compare')||'{}').ids||[];}catch(e){}
+  const ids=[r.id,...previous].filter((id,i,list)=>Number.isInteger(id)&&id>=0&&id<rows.length&&list.indexOf(id)===i).slice(0,8);
+  compareLink.href='./compare.html?models='+ids.join(',')+'&m='+encodeURIComponent(state.metric);
+});
+compareLink.href='./compare.html';
+details.append(name,sub,stats,heading,values,link,compareLink);
 }
 function drawTable(){
 const value=el('search').value.trim().toLowerCase(),m=metricFor(),efficient=new Set(frontier(visible()).map(r=>r.id));
