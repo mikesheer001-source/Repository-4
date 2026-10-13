@@ -45,7 +45,7 @@ const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
 const formatCost=n=>n<.01?'$'+n.toFixed(4):n<.1?'$'+Number(n.toFixed(3)):'$'+Number(n.toFixed(2));
 const metricFor=()=>metrics.find(m=>m.key===state.metric)||metrics[0];
 const score=(r,m=metricFor())=>r.scores[m.pos];
-let state={metric:'index',scale:'linear',zoom:1,start:0,hidden:[],frontier:true,selected:rows.find(r=>r.name==='GPT-6.1 Sol high')?.id||0};
+let state={metric:'index',scale:'linear',yScale:'zero',zoom:1,start:0,hidden:[],frontier:true,selected:rows.find(r=>r.name==='GPT-6.1 Sol high')?.id||0};
 function bounds(st=state){return st.scale==='log'?[logMin,logMax]:[0,maxLinear];}
 function span(st=state){let [lo,hi]=bounds(st);return(hi-lo)/Math.max(1,st.zoom);}
 function normalize(st){
@@ -53,6 +53,7 @@ const result={...st},[lo,hi]=bounds(st);
 result.zoom=clamp(Math.round(Number(st.zoom)||1),1,60);
 result.start=clamp(Number.isFinite(Number(st.start))?Number(st.start):lo,lo,hi-(hi-lo)/result.zoom);
 result.hidden=[...new Set((st.hidden||[]).filter(x=>families.includes(x)))];
+result.yScale=st.yScale==='fit'?'fit':'zero';
 if(!metrics.some(m=>m.key===result.metric))result.metric='index';
 if(!['linear','log'].includes(result.scale))result.scale='linear';
 result.frontier=!!result.frontier;
@@ -60,10 +61,21 @@ return result;
 }
 function loadSettings(){
 try{
- const url=new URL(location.href);const m=url.searchParams.get('m'),x=url.searchParams.get('x'),z=url.searchParams.get('z'),a=url.searchParams.get('a'),h=url.searchParams.get('h');
+ const url=new URL(location.href);
  const saved=JSON.parse(localStorage.getItem('modelscope-settings')||'null')||{};
- if(m||x||z||a||h!==null){
-  return normalize({...state,...saved,metric:m||saved.metric||'index',scale:x||saved.scale||'linear',zoom:z?Number(z):1,start:a?Number(a):(x==='log'?logMin:0),hidden:h?h.split(',').map(i=>families[Number(i)]).filter(Boolean):[],frontier:url.searchParams.get('p')!=='0'});
+ const keys=['m','x','z','a','h','p','y'];
+ if(keys.some(k=>url.searchParams.has(k))){
+   const x=url.searchParams.get('x')||saved.scale||'linear';
+   const h=url.searchParams.get('h');
+   return normalize({...state,...saved,
+      metric:url.searchParams.get('m')||saved.metric||'index',
+      scale:x,
+      yScale:url.searchParams.get('y')||saved.yScale||'zero',
+      zoom:url.searchParams.has('z')?Number(url.searchParams.get('z')):1,
+      start:url.searchParams.has('a')?Number(url.searchParams.get('a')):(x==='log'?logMin:0),
+      hidden:h===null?(saved.hidden||[]):h?h.split(',').map(i=>families[Number(i)]).filter(Boolean):[],
+      frontier:url.searchParams.has('p')?url.searchParams.get('p')!=='0':saved.frontier!==false
+   });
  }
  return normalize({...state,...saved});
 }catch(e){return normalize(state);}
@@ -71,8 +83,8 @@ try{
 state=loadSettings();
 function persist(){
 try{
- localStorage.setItem('modelscope-settings',JSON.stringify({metric:state.metric,scale:state.scale,zoom:state.zoom,start:state.start,hidden:state.hidden,frontier:state.frontier,selected:state.selected}));
- const url=new URL(location.href);url.searchParams.set('m',state.metric);url.searchParams.set('x',state.scale);url.searchParams.set('z',String(state.zoom));url.searchParams.set('a',Number(state.start.toFixed(5)).toString());url.searchParams.set('h',state.hidden.map(f=>families.indexOf(f)).join(','));url.searchParams.set('p',state.frontier?'1':'0');history.replaceState(null,'',url);
+ localStorage.setItem('modelscope-settings',JSON.stringify({metric:state.metric,scale:state.scale,yScale:state.yScale,zoom:state.zoom,start:state.start,hidden:state.hidden,frontier:state.frontier,selected:state.selected}));
+ const url=new URL(location.href);url.searchParams.set('m',state.metric);url.searchParams.set('x',state.scale);url.searchParams.set('y',state.yScale);url.searchParams.set('z',String(state.zoom));url.searchParams.set('a',Number(state.start.toFixed(5)).toString());url.searchParams.set('h',state.hidden.map(f=>families.indexOf(f)).join(','));url.searchParams.set('p',state.frontier?'1':'0');history.replaceState(null,'',url);
 }catch(e){}
 }
 function update(patch){state=normalize({...state,...patch});render();persist();}
@@ -87,16 +99,39 @@ function svgEl(tag,attrs={},parent=plot,text){
 const elem=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))elem.setAttribute(k,String(v));if(text!==undefined)elem.textContent=String(text);parent.appendChild(elem);return elem;
 }
 function geometry(){const rect=plot.getBoundingClientRect(),w=Math.max(310,rect.width||800),h=Math.max(340,rect.height||465);return {w,h,l:w<500?53:66,r:w-18,t:21,b:h-59};}
+function niceYStep(raw){
+ const magnitude=10**Math.floor(Math.log10(Math.max(raw,0.000001)));
+ const scale=raw/magnitude;
+ return ([1,2,2.5,5,10].find(n=>scale<=n)||10)*magnitude;
+}
 function chartYDomain(list){
-const metric=metricFor();
-if(metric.key==='index')return [0,65,10];
-if(metric.key==='omni')return [-20,60,10];
-if(metric.unit==='%')return [0,100,20];
-const vals=list.map(r=>score(r));
-if(!vals.length)return [0,2000,500];
-const lo=Math.min(...vals),hi=Math.max(...vals);
-const step=hi-lo>750?200:hi-lo>400?100:50;
-return [Math.max(0,Math.floor((lo-step*.75)/step)*step),Math.ceil((hi+step*.6)/step)*step,step];
+ const metric=metricFor();
+ const scores=list.map(r=>score(r)).filter(n=>typeof n==='number'&&Number.isFinite(n));
+ if(!scores.length){
+  if(metric.key==='index')return [0,70,10];
+  if(metric.key==='omni')return [-20,60,10];
+  if(metric.unit==='%')return [0,100,20];
+  return [0,2000,500];
+ }
+ const lowScore=Math.min(...scores),highScore=Math.max(...scores);
+ const gap=Math.max(highScore-lowScore,metric.unit==='Elo-style score'?50:5);
+ const padding=Math.max(gap*.07,metric.unit==='Elo-style score'?5:.5);
+ if(state.yScale==='fit'){
+  const bottomTarget=lowScore>=0?Math.max(0,lowScore-padding):lowScore-padding;
+  const topTarget=highScore+padding;
+  const step=niceYStep((topTarget-bottomTarget)/7);
+  const lower=Math.floor((bottomTarget+step*1e-9)/step)*step;
+  const upper=Math.max(lower+step,Math.ceil((topTarget-step*1e-9)/step)*step);
+  return [lower,upper,step];
+ }
+ // The zero-baseline option still includes negative values where present:
+ // negative scores would be hidden if the bottom were strictly zero.
+ const bottomTarget=Math.min(0,lowScore-padding*(lowScore<0?1:0));
+ const topTarget=Math.max(highScore+padding,metric.key==='index'?65:metric.key==='omni'?60:metric.unit==='%'?100:0);
+ const step=niceYStep((topTarget-bottomTarget)/7);
+ const lower=bottomTarget<0?Math.floor(bottomTarget/step)*step:0;
+ const upper=Math.max(lower+step,Math.ceil(topTarget/step)*step);
+ return [lower,upper,step];
 }
 function formatValue(n,metric=metricFor()){
 if(n==null)return 'Not reported';
@@ -126,12 +161,14 @@ return vals;
 let currentPointPositions=[];
 function drawChart(){
 const m=metricFor(),list=visible(),g=geometry(),[yMin,yMax,yStep]=chartYDomain(list);
+const axisNote=document.getElementById('y-axis-note');
+if(axisNote)axisNote.textContent=state.yScale==='fit'?'Y-axis fits the lowest and highest enabled model scores.':yMin<0?'Negative scores included below zero so no models are clipped.':'Y-axis starts at zero.';
 const [a,b]=bounds(),xUnit=x=>state.scale==='log'?Math.log10(x):x,xCoord=x=>g.l+(xUnit(x)-state.start)/span()*(g.r-g.l),yCoord=v=>g.b-(v-yMin)/(yMax-yMin)*(g.b-g.t);
 plot.setAttribute('viewBox','0 0 '+g.w+' '+g.h);plot.replaceChildren();
 const defs=svgEl('defs'),clip=svgEl('clipPath',{id:'points-clip'},defs);svgEl('rect',{x:g.l,y:g.t,width:g.r-g.l,height:g.b-g.t},clip);
 for(let y=yMin;y<=yMax+1e-8;y+=yStep){
 const Y=yCoord(y);svgEl('line',{x1:g.l,y1:Y,x2:g.r,y2:Y,stroke:'#94a3b8','stroke-opacity':.19});
-svgEl('text',{x:g.l-10,y:Y+4,'text-anchor':'end',fill:'#95a9c2','font-size':11,'font-family':'system-ui'},plot,String(y));
+svgEl('text',{x:g.l-10,y:Y+4,'text-anchor':'end',fill:'#95a9c2','font-size':11,'font-family':'system-ui'},plot,String(Number(y.toFixed(6))));
 }
 for(const value of xTickValues()){
 const X=xCoord(value);if(X<g.l-2||X>g.r+2)continue;
@@ -223,18 +260,7 @@ const heading=document.createElement('h3');heading.textContent='All benchmark re
 const values=document.createElement('div');values.className='detail-values';
 metrics.forEach(mm=>{const label=document.createElement('span'),value=document.createElement('strong');label.textContent=mm.name;value.textContent=formatValue(score(r,mm),mm);values.append(label,value);});
 const link=document.createElement('a');link.className='detail-link';link.href='https://artificialanalysis.ai/';link.target='_blank';link.rel='noopener noreferrer';link.textContent='Explore Artificial Analysis ↗';
-const compareLink=document.createElement('a');
-compareLink.className='detail-link';
-compareLink.style.cssText='display:inline-block;margin-top:12px;border:1px solid #3a638c;background:#183653;padding:8px 12px;border-radius:9px;font-weight:700;';
-compareLink.textContent='＋ Compare this model →';
-compareLink.addEventListener('click',()=>{
-  let previous=[];
-  try{previous=JSON.parse(localStorage.getItem('modelscope-compare')||'{}').ids||[];}catch(e){}
-  const ids=[r.id,...previous].filter((id,i,list)=>Number.isInteger(id)&&id>=0&&id<rows.length&&list.indexOf(id)===i).slice(0,8);
-  compareLink.href='./compare.html?models='+ids.join(',')+'&m='+encodeURIComponent(state.metric);
-});
-compareLink.href='./compare.html';
-details.append(name,sub,stats,heading,values,link,compareLink);
+details.append(name,sub,stats,heading,values,link);
 }
 function drawTable(){
 const value=el('search').value.trim().toLowerCase(),m=metricFor(),efficient=new Set(frontier(visible()).map(r=>r.id));
@@ -252,10 +278,16 @@ body.appendChild(tr);
 }
 function render(){
 el('zoom-range').value=state.zoom;el('frontier-toggle').checked=state.frontier;
+el('y-zero-button').classList.toggle('active',state.yScale==='zero');
+el('y-fit-button').classList.toggle('active',state.yScale==='fit');
+el('y-zero-button').setAttribute('aria-pressed',String(state.yScale==='zero'));
+el('y-fit-button').setAttribute('aria-pressed',String(state.yScale==='fit'));
 el('linear-button').classList.toggle('active',state.scale==='linear');
 el('log-button').classList.toggle('active',state.scale==='log');
 drawMetricButtons();drawChart();drawFamilies();drawDetail();drawTable();
 }
+el('y-zero-button').addEventListener('click',()=>update({yScale:'zero'}));
+el('y-fit-button').addEventListener('click',()=>update({yScale:'fit'}));
 el('linear-button').addEventListener('click',()=>update({scale:'linear',start:0,zoom:1}));
 el('log-button').addEventListener('click',()=>update({scale:'log',start:logMin,zoom:1}));
 el('frontier-toggle').addEventListener('change',e=>update({frontier:e.target.checked}));
