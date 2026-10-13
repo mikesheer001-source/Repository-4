@@ -191,16 +191,16 @@ if(r.id===state.selected)svgEl('circle',{cx:X,cy:Y,r:12,fill:'none',stroke:'#fbb
 const dot=svgEl('circle',{cx:X,cy:Y,r:r.id===state.selected?7.4:6.3,fill:colors[r.family]||'#ccc',stroke:'#102034','stroke-width':1.3,'data-id':r.id,tabindex:0,role:'button','aria-label':r.name+', '+formatValue(score(r))+', '+formatCost(r.cost)+' per task',style:'cursor:pointer'},points);
 svgEl('title',{},dot,r.name+' • '+formatValue(score(r))+' • '+formatCost(r.cost)+'/task');
 }
+// Selected point stays highlighted in the plot. Its label is anchored to the
+// chart footer instead of floating beside the point.
 const selected=list.find(r=>r.id===state.selected);
-if(selected){
-const X=xCoord(selected.cost),Y=yCoord(score(selected));
-if(X>=g.l&&X<=g.r){
-const text=selected.name;
-const tw=Math.min(g.r-g.l-10,text.length*6.7+22),x=clamp(X-tw/2,g.l,g.r-tw),y=Y>g.t+44?Y-38:Y+17;
-const label=svgEl('g',{'pointer-events':'none'});
-svgEl('rect',{x,y,width:tw,height:27,rx:7,fill:'#e9f3ff',opacity:.97},label);
-svgEl('text',{x:x+tw/2,y:y+18,fill:'#122235','font-size':11.2,'text-anchor':'middle','font-family':'system-ui','font-weight':700},label,text);
-}
+const selectedLabel=el('selected-chart-label');
+const selectedName=el('selected-chart-name');
+const selectedStats=el('selected-chart-stats');
+if(selectedLabel&&selectedName&&selectedStats){
+  selectedLabel.classList.toggle('has-selection',!!selected);
+  selectedName.textContent=selected?selected.name:'Tap a model point to inspect it';
+  selectedStats.textContent=selected?m.short+': '+formatValue(score(selected),m)+'  ·  '+formatCost(selected.cost)+'/task':'';
 }
 if(!list.length){
 svgEl('text',{x:(g.l+g.r)/2,y:(g.t+g.b)/2-8,'text-anchor':'middle',fill:'#d6e9ff','font-size':19,'font-family':'system-ui','font-weight':700},plot,'No models visible');
