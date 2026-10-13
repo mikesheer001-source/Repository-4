@@ -6,6 +6,7 @@ A standalone, mobile-friendly interactive comparison of 39 model configurations 
 
 - Select Intelligence Index, AA-Briefcase, GDPval-AA, AutomationBench, Terminal-Bench, SciCode, Humanity's Last Exam, GDP.pdf, CritPt, Omniscience, and Long Context benchmarks.
 - Switch between linear and logarithmic cost axes.
+- Switch the Y-axis baseline between **Zero** and **Lowest model** (fits the currently enabled models with padding; negative data remains visible).
 - Zoom slider immediately below the chart (1×–60×), horizontal drag-pan, and pinch/wheel zoom.
 - Hide or restore model families individually; **Flip all** reverses every selection.
 - Dynamic visible-model Pareto frontier, point inspection, searchable model data table, CSV export, and sharable URL settings.
