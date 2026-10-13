@@ -38,6 +38,11 @@
     </div>
     <div class="plot-wrap">
       <svg id="plot" role="img" aria-label="Interactive scatter chart comparing model cost and intelligence. Tap points for model details, drag to pan, pinch to zoom." viewBox="0 0 800 475"></svg>
+      <div class="selected-chart-label" id="selected-chart-label" role="status" aria-live="polite" aria-atomic="true">
+        <span class="selected-chart-kicker">SELECTED MODEL</span>
+        <strong id="selected-chart-name">Tap a model point to inspect it</strong>
+        <span class="selected-chart-stats" id="selected-chart-stats"></span>
+      </div>
       <div class="plot-instructions">Tap a point to inspect <span>·</span> Drag to pan <span>·</span> Pinch or scroll to zoom</div>
       <div class="y-axis-note" id="y-axis-note">Y-axis begins at zero where scores are nonnegative.</div>
     </div>
