@@ -191,7 +191,7 @@ if(r.id===state.selected)svgEl('circle',{cx:X,cy:Y,r:12,fill:'none',stroke:'#fbb
 // The visible dot stays small, but a transparent hit area makes taps easier.
 const hit=svgEl('circle',{cx:X,cy:Y,r:16,fill:'transparent','data-id':r.id,role:'button','aria-label':r.name+', '+formatValue(score(r))+', '+formatCost(r.cost)+' per task',style:'cursor:pointer'},points);
 const dot=svgEl('circle',{cx:X,cy:Y,r:r.id===state.selected?7.4:6.3,fill:colors[r.family]||'#ccc',stroke:'#102034','stroke-width':1.3,'pointer-events':'none'},points);
-svgEl('title',{},hit,r.name+' • '+formatValue(score(r))+' • '+formatCost(r.cost)+'/task');
+// No SVG <title>: mobile browsers can show native tooltips beside points.
 }
 // Selected point stays highlighted in the plot. Its label is anchored to the
 // chart footer instead of floating beside the point.
