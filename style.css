@@ -2,3 +2,23 @@
 /* Context for the selectable Y-axis baseline. */
 .y-axis-note{font-size:11px;color:#8ba4bc;text-align:center;padding:0 10px 12px}
 @media(max-width:600px){.chart-toolbar>.toolbar-group{flex-wrap:wrap}.y-axis-note{font-size:10px}}
+
+/* Fixed-position selected-point label below the graph, never over a data point. */
+.selected-chart-label{
+  display:flex;align-items:center;justify-content:center;gap:8px 13px;flex-wrap:wrap;
+  min-height:55px;padding:12px 14px;border-top:1px solid #30445b;
+  border-bottom:1px solid #263a51;background:#14243a;text-align:center;
+}
+.selected-chart-kicker{
+  font-size:10px;letter-spacing:1.2px;font-weight:750;color:#8faecf;white-space:nowrap;
+}
+#selected-chart-name{font-size:14px;line-height:1.4;color:#f0f7ff;font-weight:750}
+.selected-chart-stats{font-size:11px;color:#b4cce4;font-variant-numeric:tabular-nums}
+.selected-chart-label:not(.has-selection) #selected-chart-name{color:#a2b7cd;font-weight:500}
+.selected-chart-label:not(.has-selection) .selected-chart-stats{display:none}
+@media(max-width:600px){
+  .selected-chart-label{gap:3px 9px;padding:11px 10px}
+  .selected-chart-kicker{width:100%;font-size:9px}
+  #selected-chart-name{font-size:13px}
+  .selected-chart-stats{width:100%;font-size:10px}
+}
