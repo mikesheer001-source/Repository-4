@@ -188,8 +188,10 @@ const X=xCoord(r.cost),Y=yCoord(score(r));
 if(X<g.l-7||X>g.r+7)continue;
 currentPointPositions.push({id:r.id,x:X,y:Y});
 if(r.id===state.selected)svgEl('circle',{cx:X,cy:Y,r:12,fill:'none',stroke:'#fbbf24','stroke-width':2.5,'pointer-events':'none'},points);
-const dot=svgEl('circle',{cx:X,cy:Y,r:r.id===state.selected?7.4:6.3,fill:colors[r.family]||'#ccc',stroke:'#102034','stroke-width':1.3,'data-id':r.id,tabindex:0,role:'button','aria-label':r.name+', '+formatValue(score(r))+', '+formatCost(r.cost)+' per task',style:'cursor:pointer'},points);
-svgEl('title',{},dot,r.name+' • '+formatValue(score(r))+' • '+formatCost(r.cost)+'/task');
+// The visible dot stays small, but a transparent hit area makes taps easier.
+const hit=svgEl('circle',{cx:X,cy:Y,r:16,fill:'transparent','data-id':r.id,role:'button','aria-label':r.name+', '+formatValue(score(r))+', '+formatCost(r.cost)+' per task',style:'cursor:pointer'},points);
+const dot=svgEl('circle',{cx:X,cy:Y,r:r.id===state.selected?7.4:6.3,fill:colors[r.family]||'#ccc',stroke:'#102034','stroke-width':1.3,'pointer-events':'none'},points);
+svgEl('title',{},hit,r.name+' • '+formatValue(score(r))+' • '+formatCost(r.cost)+'/task');
 }
 // Selected point stays highlighted in the plot. Its label is anchored to the
 // chart footer instead of floating beside the point.
@@ -311,9 +313,26 @@ function fraction(clientX){
 const g=geometry(),rect=plot.getBoundingClientRect();
 return clamp(((clientX-rect.left)*g.w/rect.width-g.l)/(g.r-g.l),0,1);
 }
+// Find the nearest actual plotted point using the SVG screen transform.
+// This handles small dots, dense clusters, and mobile taps reliably.
+function pointNearEvent(e){
+  const matrix=plot.getScreenCTM();
+  if(!matrix)return null;
+  const pt=plot.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
+  const local=pt.matrixTransform(matrix.inverse());
+  let best=null,bestDistance=Infinity;
+  for(const p of currentPointPositions){
+    const d=Math.hypot(local.x-p.x,local.y-p.y);
+    if(d<bestDistance){bestDistance=d;best=p;}
+  }
+  return bestDistance<=19?best:null;
+}
 plot.addEventListener('pointerdown',e=>{
-const dot=e.target.closest('[data-id]');
-if(dot){state.selected=Number(dot.dataset.id);render();persist();return;}
+const near=pointNearEvent(e);
+if(near){
+  state.selected=near.id;
+  render();persist();return;
+}
 plot.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
 if(ptrs.size===1){pan={x:e.clientX,start:state.start,span:span()};pinch=null;}
 if(ptrs.size===2){
@@ -342,9 +361,8 @@ let z=e.deltaY<0?Math.max(state.zoom+1,Math.round(state.zoom*1.25)):Math.min(sta
 z=clamp(z,1,60);
 const [a,b]=bounds(),w=(b-a)/z;update({zoom:z,start:clamp(anchor-ratio*w,a,b-w)});
 },{passive:false});
-plot.addEventListener('keydown',e=>{
-if(e.target.matches('[data-id]')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();state.selected=Number(e.target.dataset.id);render();persist();}
-});
+// Pointer selection is handled by the chart; keyboard users can select
+// models from the accessible data table below it.
 let resizeTimer=null;
 if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(drawChart,50);}).observe(plot);
 drawLegend();render();persist();
