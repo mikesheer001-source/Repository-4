@@ -18,7 +18,9 @@ return model;
 });
 const liveUpdated=appliedUpdates>0&&typeof live.updated_at==='string';
 const dataStatus=document.getElementById('data-status');
-if(dataStatus)dataStatus.textContent=liveUpdated?'Basic scores/costs refreshed '+live.updated_at.slice(0,10)+' UTC for '+appliedUpdates+' models. Detailed benchmarks are static.':'Static snapshot. Automatic updates await API key and redistribution rights.';
+if(dataStatus)dataStatus.textContent=liveUpdated
+ ? 'Reviewed '+(payload.as_of||'previously')+'; basic scores/costs additionally API-refreshed '+live.updated_at.slice(0,10)+' UTC for '+appliedUpdates+' models.'
+ : 'Manual source review: '+(payload.as_of||'date not recorded')+' · '+(payload.review?.changed_fields||0)+' corrected figures. Snapshot, not live API data.';
 const metrics=[
 {key:'index',short:'Intelligence',name:'Artificial Analysis Intelligence Index',unit:'Index points',desc:'Composite intelligence across component evaluations.',pos:0},
 {key:'briefcase',short:'AA-Briefcase',name:'AA-Briefcase v1.1',unit:'Elo-style score',desc:'Agentic knowledge work benchmark.',pos:1},
@@ -252,7 +254,7 @@ const r=rows[state.selected],m=metricFor();
 if(!r||state.hidden.includes(r.family)){details.innerHTML='<p class="panel-intro">Select a visible model to see its benchmarks.</p>';return;}
 details.replaceChildren();
 const name=document.createElement('div');name.className='model-name';name.textContent=r.name;
-const sub=document.createElement('div');sub.className='model-sub';sub.textContent=r.family+' · Published rounded benchmark values';
+const sub=document.createElement('div');sub.className='model-sub';sub.textContent=r.family+' · Source-reviewed '+(payload.as_of||'benchmark snapshot')+' · Published rounded values';
 const stats=document.createElement('div');stats.className='stat-row';
 for(const [label,value] of [[m.short,formatValue(score(r),m)],['Cost / task',formatCost(r.cost)],['Intelligence',String(r.scores[0])]]){
 const wrap=document.createElement('div');wrap.className='stat-box';
@@ -261,7 +263,7 @@ const a=document.createElement('small'),b=document.createElement('strong');a.tex
 const heading=document.createElement('h3');heading.textContent='All benchmark results';heading.style.cssText='font-size:12px;margin:12px 0;color:#c5daee';
 const values=document.createElement('div');values.className='detail-values';
 metrics.forEach(mm=>{const label=document.createElement('span'),value=document.createElement('strong');label.textContent=mm.name;value.textContent=formatValue(score(r,mm),mm);values.append(label,value);});
-const link=document.createElement('a');link.className='detail-link';link.href='https://artificialanalysis.ai/';link.target='_blank';link.rel='noopener noreferrer';link.textContent='Explore Artificial Analysis ↗';
+const link=document.createElement('a');link.className='detail-link';link.href=(r.name==='GPT-6 Sol non-reasoning'?'https://artificialanalysis.ai/models/gpt-6-sol-non-reasoning':(payload.sources?.[r.family]||'https://artificialanalysis.ai/'));link.target='_blank';link.rel='noopener noreferrer';link.textContent='Explore Artificial Analysis ↗';
 details.append(name,sub,stats,heading,values,link);
 }
 function drawTable(){
@@ -297,6 +299,15 @@ el('zoom-range').addEventListener('input',e=>{const z=Number(e.target.value),[a,
 document.querySelectorAll('[data-zoom]').forEach(b=>b.addEventListener('click',()=>update({zoom:Number(b.dataset.zoom),start:bounds()[0]})));
 el('flip-all').addEventListener('click',()=>update({hidden:families.filter(f=>!state.hidden.includes(f))}));
 el('show-all').addEventListener('click',()=>update({hidden:[]}));
+const focusSol=document.getElementById('focus-sol');
+if(focusSol){
+ focusSol.addEventListener('click',()=>{
+   const target=rows.find(r=>r.name==='GPT-6 Sol medium');
+   update({metric:'index',hidden:families.filter(f=>f!=='GPT-6 Sol'),selected:target?target.id:state.selected});
+   const dashboard=document.querySelector('.dashboard');
+   if(dashboard)dashboard.scrollIntoView({behavior:'smooth',block:'start'});
+ });
+}
 el('search').addEventListener('input',drawTable);
 el('download-csv').addEventListener('click',()=>{
 const m=metricFor();
