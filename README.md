@@ -35,6 +35,16 @@ Data is a **static snapshot** from the prior ChatGPT comparison and Artificial A
 
 For latest original model measurements, check https://artificialanalysis.ai/.
 
+## October 16, 2026 manual benchmark audit
+
+The website's **39 plotted model configurations / 11 measurements** were reviewed against the publicly displayed Artificial Analysis model-comparison data on October 16, 2026. The dataset in `data.js` has an `as_of` timestamp, original metric units, benchmark version, model-family sources and a numeric change summary.
+
+- **29 model rows** received **40 numerical corrections** from the review.
+- Most revisions are small AA-Briefcase/GDPval-AA fluctuations; GLM-5.3-Flash's displayed cost per task is now **$0.28**.
+- GPT-6 Sol non-reasoning is **deprecated** and retains its last published historical values (not an actively maintained current benchmark).
+- The user-facing ChatGPT GPT-6 **Instant, Medium, High** settings are powered by GPT-6 Sol on eligible paid plans (see [OpenAI model help](https://help.openai.com/en/articles/20001354-gpt-6-and-other-models-in-chatgpt)). Their exact scores and costs are **not published separately** by Artificial Analysis; do not equate them to particular API reasoning settings.
+- Artificial Analysis data is rounded and can change as evaluations are repeated. This is a reviewed **snapshot**, not proof of continuously live numbers. See [Artificial Analysis](https://artificialanalysis.ai/models/releases) for future changes.
+
 ## Optional once-daily Artificial Analysis API updates
 
 The default website remains **fully functional from the original `data.js` snapshot**.
