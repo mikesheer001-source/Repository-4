@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#0b1220">
 <meta name="description" content="Explore 39 AI model configurations across 11 benchmarks with adjustable cost axes, zoom, and Pareto frontiers.">
 <title>AI Benchmark Explorer — Intelligence vs Cost</title>
-<link rel="stylesheet" href="./style.css?v=20261013-pointfix2">
-<script defer src="./data.js"></script>
+<link rel="stylesheet" href="./style.css?v=20261016-audit1">
+<script defer src="./data.js?v=20261016-audit1"></script>
 <script defer src="./updates.js"></script>
-<script defer src="./app.js?v=20261013-pointfix3"></script>
+<script defer src="./app.js?v=20261016-audit1"></script>
 </head>
 <body>
 <header class="site-header">
@@ -20,11 +20,23 @@
 </header>
 <main class="shell">
   <section class="intro">
-    <div class="eyebrow">AI PERFORMANCE INTELLIGENCE <span class="eyebrow-line"></span> 39 CONFIGURATIONS</div>
+    <div class="eyebrow">AI PERFORMANCE INTELLIGENCE <span class="eyebrow-line"></span> 39 VERIFIED MODEL CONFIGURATIONS · REVIEWED OCT 16, 2026</div>
     <div class="intro-head">
       <div><h1>Intelligence <span>vs.</span> cost</h1><p>Explore the frontier of AI performance. Compare reasoning, coding, knowledge work and more — with every benchmark on its own scale.</p></div>
       <div class="data-tile"><span>Visible models</span><strong id="visible-count">39 <em>/ 39</em></strong><small id="visible-label">Across 12 families</small></div>
     </div>
+  </section>
+  <section class="chatgpt-modes" aria-label="ChatGPT GPT-6 modes">
+    <div class="modes-header">
+      <div><span class="section-kicker">CHATGPT / GPT-6</span><h2>Instant, Medium &amp; High</h2></div>
+      <button id="focus-sol" type="button" class="pill-primary">View GPT-6 Sol benchmarks →</button>
+    </div>
+    <div class="mode-grid">
+      <div class="mode-card"><strong>Instant</strong><span>Fast everyday responses</span><small>Powered by GPT-6 Sol</small></div>
+      <div class="mode-card"><strong>Medium</strong><span>Standard thinking</span><small>Powered by GPT-6 Sol</small></div>
+      <div class="mode-card"><strong>High</strong><span>Extended thinking</span><small>Powered by GPT-6 Sol</small></div>
+    </div>
+    <p class="modes-footnote">These are ChatGPT thinking settings, not separately benchmarked API configurations. Artificial Analysis tests GPT-6 Sol at API reasoning levels; those results cannot be assigned one-to-one to Instant, Medium, or High. No invented performance points are shown. <a href="https://help.openai.com/en/articles/20001354-gpt-6-and-other-models-in-chatgpt" target="_blank" rel="noopener noreferrer">OpenAI's model guide ↗</a></p>
   </section>
   <section class="dashboard" aria-label="Model comparison chart">
     <div class="section-title"><div><span class="section-kicker">01 / EXPLORE</span><h2>Benchmark performance</h2></div><button type="button" id="download-csv" class="subtle-button" title="Download currently visible model values as CSV">↓ Export CSV</button></div>
