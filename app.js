@@ -280,21 +280,30 @@ tr.addEventListener('click',()=>{state.selected=r.id;render();const section=docu
 body.appendChild(tr);
 });
 }
+function refreshCycleButtons(){
+ const x=el('cycle-x-scale'),y=el('cycle-y-start'),front=el('cycle-frontier');
+ const log=state.scale==='log',fit=state.yScale==='fit';
+ // Buttons display the CURRENT setting, and pressing them changes it.
+ x.replaceChildren(document.createTextNode(log?'Logarithmic ':'Linear '));
+ const xicon=document.createElement('span');xicon.setAttribute('aria-hidden','true');xicon.textContent='↔';x.append(xicon);
+ x.setAttribute('aria-label','X-axis scale: '+(log?'logarithmic':'linear')+'. Tap to switch to '+(log?'linear':'logarithmic')+'.');
+ y.replaceChildren(document.createTextNode(fit?'Lowest model ':'Zero '));
+ const yicon=document.createElement('span');yicon.setAttribute('aria-hidden','true');yicon.textContent='↔';y.append(yicon);
+ y.setAttribute('aria-label','Y-axis starts at '+(fit?'lowest visible model':'zero')+'. Tap to switch to '+(fit?'zero':'lowest visible model')+'.');
+ front.replaceChildren(document.createTextNode(state.frontier?'On ':'Off '));
+ const ficon=document.createElement('span');ficon.setAttribute('aria-hidden','true');ficon.textContent='↔';front.append(ficon);
+ front.setAttribute('aria-label','Pareto frontier '+(state.frontier?'on. Tap to turn off.':'off. Tap to turn on.'));
+ front.setAttribute('aria-pressed',String(state.frontier));
+ front.classList.toggle('disabled-state',!state.frontier);
+}
 function render(){
-el('zoom-range').value=state.zoom;el('frontier-toggle').checked=state.frontier;
-el('y-zero-button').classList.toggle('active',state.yScale==='zero');
-el('y-fit-button').classList.toggle('active',state.yScale==='fit');
-el('y-zero-button').setAttribute('aria-pressed',String(state.yScale==='zero'));
-el('y-fit-button').setAttribute('aria-pressed',String(state.yScale==='fit'));
-el('linear-button').classList.toggle('active',state.scale==='linear');
-el('log-button').classList.toggle('active',state.scale==='log');
+el('zoom-range').value=state.zoom;
+refreshCycleButtons();
 drawMetricButtons();drawChart();drawFamilies();drawDetail();drawTable();
 }
-el('y-zero-button').addEventListener('click',()=>update({yScale:'zero'}));
-el('y-fit-button').addEventListener('click',()=>update({yScale:'fit'}));
-el('linear-button').addEventListener('click',()=>update({scale:'linear',start:0,zoom:1}));
-el('log-button').addEventListener('click',()=>update({scale:'log',start:logMin,zoom:1}));
-el('frontier-toggle').addEventListener('change',e=>update({frontier:e.target.checked}));
+el('cycle-y-start').addEventListener('click',()=>update({yScale:state.yScale==='zero'?'fit':'zero'}));
+el('cycle-x-scale').addEventListener('click',()=>{const next=state.scale==='linear'?'log':'linear';update({scale:next,start:next==='log'?logMin:0,zoom:1});});
+el('cycle-frontier').addEventListener('click',()=>update({frontier:!state.frontier}));
 el('zoom-range').addEventListener('input',e=>{const z=Number(e.target.value),[a,b]=bounds();update({zoom:z,start:clamp(state.start,a,b-(b-a)/z)});});
 document.querySelectorAll('[data-zoom]').forEach(b=>b.addEventListener('click',()=>update({zoom:Number(b.dataset.zoom),start:bounds()[0]})));
 el('flip-all').addEventListener('click',()=>update({hidden:families.filter(f=>!state.hidden.includes(f))}));
