@@ -5,8 +5,9 @@ A standalone, mobile-friendly interactive comparison of 39 model configurations 
 ## Features
 
 - Select Intelligence Index, AA-Briefcase, GDPval-AA, AutomationBench, Terminal-Bench, SciCode, Humanity's Last Exam, GDP.pdf, CritPt, Omniscience, and Long Context benchmarks.
-- Switch between linear and logarithmic cost axes.
-- Switch the Y-axis baseline between **Zero** and **Lowest model** (fits the currently enabled models with padding; negative data remains visible).
+- Press a single **X-axis scale** button to cycle between Linear and Logarithmic.
+- Press a single **Y-axis start** button to cycle between Zero and Lowest model (with padding; negative values still shown).
+- Press the **Pareto frontier** button to show/hide the efficient frontier.
 - Zoom slider immediately below the chart (1×–60×), horizontal drag-pan, and pinch/wheel zoom.
 - Hide or restore model families individually; **Flip all** reverses every selection.
 - Dynamic visible-model Pareto frontier, point inspection, searchable model data table, CSV export, and sharable URL settings.
@@ -34,6 +35,12 @@ The workflow deploys automatically on push to `main`, or it can be run manually 
 Data is a **static snapshot** from the prior ChatGPT comparison and Artificial Analysis-referenced values, not a live API connection. Model costs and scores are rounded. Some benchmark fields are unavailable; unavailable values are excluded from those plots, never replaced with fabricated measurements. The frontier is computed over **visible models with reported values**, not the global model ecosystem.
 
 For latest original model measurements, check https://artificialanalysis.ai/.
+
+## October 21, 2026 source spot-check
+
+Checked current Artificial Analysis model comparison pages across OpenAI, Anthropic, Meta and other providers on October 21, 2026. Applied **7 changes** to source-verified AA-Briefcase scores, including GPT-6.1 Sol High (1465), GPT-6 Sol High (1266), Claude Opus 5.5 High (1686), and others. The complete list and individual comparison-page URLs are in the `review.latest_changes` entries inside `data.js`.
+
+This is a **targeted spot-check**, not a full re-evaluation of all 429 potential data cells. Scores not specifically checked on October 21 retain the October 16 snapshot. No API update or new benchmark data were invented.
 
 ## October 16, 2026 manual benchmark audit
 
