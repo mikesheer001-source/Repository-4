@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#0b1220">
 <meta name="description" content="Explore 39 AI model configurations across 11 benchmarks with adjustable cost axes, zoom, and Pareto frontiers.">
 <title>AI Benchmark Explorer — Intelligence vs Cost</title>
-<link rel="stylesheet" href="./style.css?v=20261016-audit1">
-<script defer src="./data.js?v=20261016-audit1"></script>
+<link rel="stylesheet" href="./style.css?v=20261021-buttons2">
+<script defer src="./data.js?v=20261021-verified2"></script>
 <script defer src="./updates.js"></script>
-<script defer src="./app.js?v=20261016-audit1"></script>
+<script defer src="./app.js?v=20261021-buttons2"></script>
 </head>
 <body>
 <header class="site-header">
@@ -20,7 +20,7 @@
 </header>
 <main class="shell">
   <section class="intro">
-    <div class="eyebrow">AI PERFORMANCE INTELLIGENCE <span class="eyebrow-line"></span> 39 VERIFIED MODEL CONFIGURATIONS · REVIEWED OCT 16, 2026</div>
+    <div class="eyebrow">AI PERFORMANCE INTELLIGENCE <span class="eyebrow-line"></span> 39 VERIFIED MODEL CONFIGURATIONS · SPOT-CHECKED OCT 21, 2026</div>
     <div class="intro-head">
       <div><h1>Intelligence <span>vs.</span> cost</h1><p>Explore the frontier of AI performance. Compare reasoning, coding, knowledge work and more — with every benchmark on its own scale.</p></div>
       <div class="data-tile"><span>Visible models</span><strong id="visible-count">39 <em>/ 39</em></strong><small id="visible-label">Across 12 families</small></div>
@@ -43,9 +43,9 @@
     <div class="metrics-header"><span class="control-label">Y-AXIS · BENCHMARK</span><span id="metric-context">Higher is better</span></div>
     <div class="metric-buttons" id="metric-buttons" role="group" aria-label="Select benchmark"></div>
     <div class="chart-toolbar">
-      <div class="toolbar-group"><span class="control-label">X-AXIS SCALE</span><div class="segmented" role="group" aria-label="Cost axis scale"><button class="active" id="linear-button" type="button">Linear</button><button id="log-button" type="button">Logarithmic</button></div></div>
-      <div class="toolbar-group"><span class="control-label">Y-AXIS START</span><div class="segmented" role="group" aria-label="Y-axis starting value"><button class="active" id="y-zero-button" type="button" aria-pressed="true">Zero</button><button id="y-fit-button" type="button" aria-pressed="false">Lowest model</button></div></div>
-      <label class="toggle-label"><input id="frontier-toggle" type="checkbox" checked><span class="toggle-track"></span> Pareto frontier</label>
+      <div class="toolbar-group"><span class="control-label">X-AXIS SCALE</span><button id="cycle-x-scale" type="button" class="cycle-button" aria-label="X-axis scale: linear. Tap to switch to logarithmic." title="Tap to switch between linear and logarithmic scale">Linear <span aria-hidden="true">↔</span></button></div>
+      <div class="toolbar-group"><span class="control-label">Y-AXIS START</span><button id="cycle-y-start" type="button" class="cycle-button" aria-label="Y-axis starts at zero. Tap to switch to lowest model." title="Tap to switch Y-axis baseline">Zero <span aria-hidden="true">↔</span></button></div>
+      <div class="toolbar-group"><span class="control-label">PARETO FRONTIER</span><button id="cycle-frontier" type="button" class="cycle-button" aria-pressed="true" aria-label="Pareto frontier on. Tap to turn off.">On <span aria-hidden="true">↔</span></button></div>
       <span class="toolbar-unit" id="axis-units">Index score</span>
     </div>
     <div class="plot-wrap">
