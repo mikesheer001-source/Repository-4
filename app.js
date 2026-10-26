@@ -20,7 +20,7 @@ const liveUpdated=appliedUpdates>0&&typeof live.updated_at==='string';
 const dataStatus=document.getElementById('data-status');
 if(dataStatus)dataStatus.textContent=liveUpdated
  ? 'Reviewed '+(payload.as_of||'previously')+'; basic scores/costs additionally API-refreshed '+live.updated_at.slice(0,10)+' UTC for '+appliedUpdates+' models.'
- : 'Manual source review: '+(payload.as_of||'date not recorded')+' · '+(payload.review?.changed_fields||0)+' corrected figures. Snapshot, not live API data.';
+ : 'Reviewed '+(payload.as_of||'unknown date')+' · '+(payload.review?.verified_current_rows||0)+' current model rows; '+(payload.review?.legacy_rows?.length||0)+' historical. Not an automatic live feed.';
 const metrics=[
 {key:'index',short:'Intelligence',name:'Artificial Analysis Intelligence Index',unit:'Index points',desc:'Composite intelligence across component evaluations.',pos:0},
 {key:'briefcase',short:'AA-Briefcase',name:'AA-Briefcase v1.1',unit:'Elo-style score',desc:'Agentic knowledge work benchmark.',pos:1},
@@ -38,7 +38,7 @@ const families=[...new Set(rows.map(r=>r.family))];
 const colors={
 'GPT-6 Luna':'#96a8bb','GPT-6.1 Sol':'#60a5fa','GPT-6 Sol':'#fb923c','GPT-5.6 Sol':'#c084fc',
 'GPT-6 Astra':'#2dd4bf','Claude Opus 5.5':'#e8a078','Gemini 3.8 Flash':'#b1d65b',
-'Gemini 4 Argon':'#4ade80','GLM-5.3':'#38bdf8','Muse Spark':'#f472b6','Kimi K3':'#a78bfa','Grok 4.6':'#c4b5fd'};
+'Gemini 4 Argon':'#4ade80','GLM-5.3':'#38bdf8','Muse Spark':'#f472b6','Kimi K3':'#a78bfa','Grok 4.6':'#c4b5fd','Qwen':'#facc15'};
 const maxCost=Math.max(...rows.map(r=>r.cost)),minCost=Math.min(...rows.map(r=>r.cost));
 const maxLinear=Math.max(6.3,Math.ceil(maxCost*10)/10), logMin=Math.log10(minCost), logMax=Math.log10(maxLinear);
 const el=id=>document.getElementById(id);
@@ -254,7 +254,7 @@ const r=rows[state.selected],m=metricFor();
 if(!r||state.hidden.includes(r.family)){details.innerHTML='<p class="panel-intro">Select a visible model to see its benchmarks.</p>';return;}
 details.replaceChildren();
 const name=document.createElement('div');name.className='model-name';name.textContent=r.name;
-const sub=document.createElement('div');sub.className='model-sub';sub.textContent=r.family+' · Source-reviewed '+(payload.as_of||'benchmark snapshot')+' · Published rounded values';
+const sub=document.createElement('div');sub.className='model-sub';sub.textContent=r.family+' · '+(r.name==='GPT-6 Sol non-reasoning'?'Historical deprecated row':'Verified '+(payload.as_of||'benchmark snapshot'))+' · Published rounded values';
 const stats=document.createElement('div');stats.className='stat-row';
 for(const [label,value] of [[m.short,formatValue(score(r),m)],['Cost / task',formatCost(r.cost)],['Intelligence',String(r.scores[0])]]){
 const wrap=document.createElement('div');wrap.className='stat-box';
@@ -263,7 +263,7 @@ const a=document.createElement('small'),b=document.createElement('strong');a.tex
 const heading=document.createElement('h3');heading.textContent='All benchmark results';heading.style.cssText='font-size:12px;margin:12px 0;color:#c5daee';
 const values=document.createElement('div');values.className='detail-values';
 metrics.forEach(mm=>{const label=document.createElement('span'),value=document.createElement('strong');label.textContent=mm.name;value.textContent=formatValue(score(r,mm),mm);values.append(label,value);});
-const link=document.createElement('a');link.className='detail-link';link.href=(r.name==='GPT-6 Sol non-reasoning'?'https://artificialanalysis.ai/models/gpt-6-sol-non-reasoning':(payload.sources?.[r.family]||'https://artificialanalysis.ai/'));link.target='_blank';link.rel='noopener noreferrer';link.textContent='Explore Artificial Analysis ↗';
+const link=document.createElement('a');link.className='detail-link';link.href=(payload.model_sources?.[r.name] || payload.sources?.[r.family] || 'https://artificialanalysis.ai/');link.target='_blank';link.rel='noopener noreferrer';link.textContent='Explore Artificial Analysis ↗';
 details.append(name,sub,stats,heading,values,link);
 }
 function drawTable(){
