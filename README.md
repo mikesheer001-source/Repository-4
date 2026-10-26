@@ -1,6 +1,6 @@
 # ModelScope — AI Benchmark Explorer
 
-A standalone, mobile-friendly interactive comparison of 39 model configurations across 11 Artificial Analysis-derived benchmarks.
+A standalone, mobile-friendly interactive comparison of 44 model configurations across 11 Artificial Analysis-derived benchmarks.
 
 ## Features
 
@@ -18,7 +18,7 @@ A standalone, mobile-friendly interactive comparison of 39 model configurations 
 - `index.html` — Site markup
 - `style.css` — Responsive dark dashboard styles
 - `app.js` — All chart rendering and UI interaction
-- `data.js` — Rounded snapshot data (39 models, 11 metrics)
+- `data.js` — Rounded snapshot data (44 models, 11 metrics)
 - `.github/workflows/pages.yml` — GitHub Pages deployment workflow
 
 ## Publishing
@@ -35,6 +35,17 @@ The workflow deploys automatically on push to `main`, or it can be run manually 
 Data is a **static snapshot** from the prior ChatGPT comparison and Artificial Analysis-referenced values, not a live API connection. Model costs and scores are rounded. Some benchmark fields are unavailable; unavailable values are excluded from those plots, never replaced with fabricated measurements. The frontier is computed over **visible models with reported values**, not the global model ecosystem.
 
 For latest original model measurements, check https://artificialanalysis.ai/.
+
+## October 26, 2026 full source review and Qwen additions
+
+Updated the existing 38 active API model configurations against currently indexed **Artificial Analysis v4.3.2** model-comparison tables and added five Qwen configurations. The dataset now contains **44 plotted configurations across 13 families and 11 Y-axis metrics**.
+
+- Source-backed updates changed 60 benchmark or cost figures across 36 of the existing models. The other two active rows retained their displayed values; GPT-6 Luna Medium's individual component scores are carried forward from the earlier snapshot because the current public source only confirmed its overall score and cost.
+- Added Qwen3.8-Flash-Next, Qwen3.8 Max (0902), Qwen3.8 27B (Xhigh), Qwen3.8 2.4T A95B, and Qwen3.7 Plus, with independently sourced values for all 11 metrics.
+- The 44th row, GPT-6 Sol non-reasoning, is a **deprecated historical result** and is not presented as newly remeasured.
+- Each newly reviewed row links to an individual Artificial Analysis comparison page through `model_sources`. Individual provider measurements can fluctuate slightly as evaluations are repeated.
+- The site remains a manually reviewed static dataset. The optional daily API automation stays gated, and **nothing here claims live continuous refresh or API authorization**.
+- Some source pages can differ by a few Elo points between crawls; the values reflect published results collected for this review, not permanently fixed scores.
 
 ## October 21, 2026 source spot-check
 
@@ -60,7 +71,7 @@ per day. It uses the supported Free API endpoint
 `https://artificialanalysis.ai/api/v2/language/models/free`.
 
 **What can update:** only the overall Intelligence Index and the **Intelligence Index
-cost per task**, for uniquely and safely matched models in the existing 39-model list.
+cost per task**, for uniquely and safely matched models in the existing 44-model list.
 The ten detailed benchmark scores are unchanged because the Free API does not provide them.
 New models are not added automatically. This is an intentionally conservative integration.
 
