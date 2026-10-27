@@ -38,10 +38,7 @@ const families=[...new Set(rows.map(r=>r.family))];
 const colors={
 'GPT-6 Luna':'#96a8bb','GPT-6.1 Sol':'#60a5fa','GPT-6 Sol':'#fb923c','GPT-5.6 Sol':'#c084fc',
 'GPT-6 Astra':'#2dd4bf','Claude Opus 5.5':'#e8a078','Gemini 3.8 Flash':'#b1d65b',
-'Gemini 4 Argon':'#4ade80','GLM-5.3':'#38bdf8','Muse Spark':'#f472b6','Kimi K3':'#a78bfa','Grok 4.6':'#c4b5fd','Qwen':'#facc15',
-'Claude Sonnet 5.5':'#e6a0c5','Claude Haiku 5.5':'#d08ad6','Grok 4.7':'#d1b9fc','Xiaomi MiMo':'#fa9c42',
-'Kimi':'#a28bfc','DeepSeek':'#36bac8','MiniMax':'#ff698d','Claude Fable 5.1':'#f0bc7c',
-'StepFun':'#b5d872','Thinking Machines':'#8ebce3','GPT-6.1 Terra':'#93c5fd'};
+'Gemini 4 Argon':'#4ade80','GLM-5.3':'#38bdf8','Muse Spark':'#f472b6','Kimi K3':'#a78bfa','Grok 4.6':'#c4b5fd','Qwen':'#facc15','GPT-6.1 Terra':'#93c5fd'};
 const maxCost=Math.max(...rows.map(r=>r.cost)),minCost=Math.min(...rows.map(r=>r.cost));
 const maxLinear=Math.max(6.3,Math.ceil(maxCost*10)/10), logMin=Math.log10(minCost), logMax=Math.log10(maxLinear);
 const el=id=>document.getElementById(id);
