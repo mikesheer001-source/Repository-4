@@ -1,6 +1,6 @@
 # ModelScope — AI Benchmark Explorer
 
-A standalone, mobile-friendly interactive comparison of 69 model configurations across 11 Artificial Analysis-derived benchmarks.
+A standalone, mobile-friendly interactive comparison of 45 model configurations across 11 Artificial Analysis-derived benchmarks.
 
 ## Features
 
@@ -18,7 +18,7 @@ A standalone, mobile-friendly interactive comparison of 69 model configurations 
 - `index.html` — Site markup
 - `style.css` — Responsive dark dashboard styles
 - `app.js` — All chart rendering and UI interaction
-- `data.js` — Rounded snapshot data (69 models, 11 metrics)
+- `data.js` — Rounded snapshot data (45 models, 11 metrics)
 - `.github/workflows/pages.yml` — GitHub Pages deployment workflow
 
 ## Publishing
@@ -36,25 +36,13 @@ Data is a **static snapshot** from the prior ChatGPT comparison and Artificial A
 
 For latest original model measurements, check https://artificialanalysis.ai/.
 
-## October 28, 2026 — 25-model expansion
+## October 28, 2026 — GPT-6.1 Terra only
 
-Added **25 newly sourced model configurations**, growing the interactive scatterplot from 44 to **69 models across 24 families**. The 11 benchmark axes, cost-per-Intelligence-Index-task X-axis, family filters, Pareto frontier, sliders, mobile interactions and CSV export remain unchanged.
+Added **GPT-6.1 Terra Max**, with Artificial Analysis Intelligence Index **48**, weighted cost per task **$0.40**, and all ten component benchmarks from the [Artificial Analysis comparison with GPT-6.1 Sol](https://artificialanalysis.ai/models/comparisons/gpt-6-1-terra-vs-gpt-6-1-sol).
 
-### Additions
+The previous October 28 expansion of 25 models was unrequested and has been **rolled back**: only Terra was intended. The existing 44 configurations (including the five Qwen variants) were preserved without changing their stored values.
 
-- OpenAI: GPT-6 Astra **Low** and **Medium**, GPT-6.1 Terra **Max**
-- Anthropic: all five Claude Sonnet 5.5 reasoning levels (**Low, Medium, High, Xhigh, Max**); all five Claude Haiku 5.5 levels; Claude Fable 5.1 **Xhigh** and **Max**
-- SpaceXAI: Grok 4.7 **High** and **Xhigh**
-- Xiaomi: MiMo-V2.6-Pro
-- Kimi: Kimi K3.1 Pro
-- DeepSeek: V4 Flash 0731 Max, V4 Pro 0813 Max, V4.1 Flash 1017 Max
-- MiniMax: M3.1-Flash
-- StepFun: Step 5 Preview
-- Thinking Machines: Inkling Xhigh
-
-All 25 added rows contain the overall Index, cost per Index task, and each of the ten component benchmark values. Each added model has a **specific Artificial Analysis comparison-page URL** under `data.js > model_sources`, supporting direct validation. Metric values are rounded as the source pages display them, and may drift as the evaluator reruns models.
-
-**Important:** This is a manual public-data snapshot reviewed October 28, not a real-time API feed. Existing older rows have not all been refreshed. The original deprecated/historical GPT-6 Sol non-reasoning row is still marked separately, and ChatGPT GPT-6 Instant/Medium/High product presets are not equated to API effort benchmarks.
+**Current total:** **45 model configurations across 14 families**. This is a manually reviewed snapshot, not a live API feed.
 
 ## October 26, 2026 full source review and Qwen additions
 
