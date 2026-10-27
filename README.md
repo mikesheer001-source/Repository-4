@@ -1,6 +1,6 @@
 # ModelScope — AI Benchmark Explorer
 
-A standalone, mobile-friendly interactive comparison of 45 model configurations across 11 Artificial Analysis-derived benchmarks.
+A standalone, mobile-friendly interactive comparison of 50 model configurations across 11 Artificial Analysis-derived benchmarks.
 
 ## Features
 
@@ -18,7 +18,7 @@ A standalone, mobile-friendly interactive comparison of 45 model configurations 
 - `index.html` — Site markup
 - `style.css` — Responsive dark dashboard styles
 - `app.js` — All chart rendering and UI interaction
-- `data.js` — Rounded snapshot data (45 models, 11 metrics)
+- `data.js` — Rounded snapshot data (50 models, 11 metrics)
 - `.github/workflows/pages.yml` — GitHub Pages deployment workflow
 
 ## Publishing
@@ -36,13 +36,24 @@ Data is a **static snapshot** from the prior ChatGPT comparison and Artificial A
 
 For latest original model measurements, check https://artificialanalysis.ai/.
 
-## October 28, 2026 — GPT-6.1 Terra only
+## October 28, 2026 — complete GPT-6.1 Terra family
 
-Added **GPT-6.1 Terra Max**, with Artificial Analysis Intelligence Index **48**, weighted cost per task **$0.40**, and all ten component benchmarks from the [Artificial Analysis comparison with GPT-6.1 Sol](https://artificialanalysis.ai/models/comparisons/gpt-6-1-terra-vs-gpt-6-1-sol).
+The October 28 update was corrected to include **all six GPT-6.1 Terra variants**, not only Max. All six have full score rows and their own relevant official Artificial Analysis source links in `data.js > model_sources`.
 
-The previous October 28 expansion of 25 models was unrequested and has been **rolled back**: only Terra was intended. The existing 44 configurations (including the five Qwen variants) were preserved without changing their stored values.
+| Terra effort | Intelligence Index | Cost per Intelligence Index task |
+|---|---:|---:|
+| Non-reasoning | 33 | $0.11 |
+| Low | 36 | $0.05 |
+| Medium | 41 | $0.10 |
+| High | 44 | $0.13 |
+| Xhigh | 45 | $0.19 |
+| Max | 48 | $0.40 |
 
-**Current total:** **45 model configurations across 14 families**. This is a manually reviewed snapshot, not a live API feed.
+Official family listing: https://artificialanalysis.ai/models/releases/gpt-6-1-terra
+
+The other **44 preexisting models were left unchanged** and none of the unrelated 24 additions were restored.
+
+**Current total:** 50 model configurations across 14 families, with 11 benchmark measurements. This is a static, source-reviewed snapshot, not a continuous API data feed. Costs are weighted average USD per Intelligence Index task, not chat subscription prices.
 
 ## October 26, 2026 full source review and Qwen additions
 
