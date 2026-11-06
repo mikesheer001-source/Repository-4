@@ -33,7 +33,7 @@ The workflow deploys automatically on push to `main`, or it can be run manually 
 
 ## November 6, 2026 snapshot
 
-The current view contains **98 configurations from 22 model developers** with published Artificial Analysis Intelligence Index **v5.0.1** scores. Of these, 92 have a published cost per task and 71 have all nine component scores linked to the relevant source comparison. Missing measurements are blank in the data. The source links on each model distinguish its leaderboard profile from the detailed comparison.
+The current view contains **65 configurations from 8 model developers**. Of these, 62 have published Intelligence Index v5.0.1 scores and costs per task, and 59 have all nine component scores. Kimi K3 (Max) has published component results and no v5.0.1 composite score or cost per task. Missing measurements are blank in the data. The source links on each model distinguish its leaderboard profile from the detailed comparison.
 
 The X-axis uses published weighted USD cost per Intelligence Index task for every Y-axis metric. Published zero costs appear on the linear axis. The logarithmic axis requires positive costs. The frontier compares eligible configurations across the enabled families, including ties at the same cost and score. Zoom and pan change the viewport.
 
