@@ -1,16 +1,16 @@
 # ModelScope — AI Benchmark Explorer
 
-A standalone, mobile-friendly interactive comparison of 50 model configurations across 11 Artificial Analysis-derived benchmarks.
+A standalone, mobile-friendly explorer for Artificial Analysis benchmark results.
 
 ## Features
 
-- Select Intelligence Index, AA-Briefcase, GDPval-AA, AutomationBench, Terminal-Bench, SciCode, Humanity's Last Exam, GDP.pdf, CritPt, Omniscience, and Long Context benchmarks.
+- Compare the Intelligence Index and the nine current component benchmarks. Switch to the October archive for the previous suite.
 - Press a single **X-axis scale** button to cycle between Linear and Logarithmic.
 - Press a single **Y-axis start** button to cycle between Zero and Lowest model (with padding; negative values still shown).
 - Press the **Pareto frontier** button to show/hide the efficient frontier.
 - Zoom slider immediately below the chart (1×–60×), horizontal drag-pan, and pinch/wheel zoom.
 - Hide or restore model families individually; **Flip all** reverses every selection.
-- Dynamic visible-model Pareto frontier, point inspection, searchable model data table, CSV export, and sharable URL settings.
+- Dynamic Pareto frontier, point inspection, searchable model data table, selected-model CSV export, and shareable URL settings.
 - Works without a server, build step, account, API key, or external JavaScript dependency.
 
 ## Files
@@ -18,7 +18,8 @@ A standalone, mobile-friendly interactive comparison of 50 model configurations 
 - `index.html` — Site markup
 - `style.css` — Responsive dark dashboard styles
 - `app.js` — All chart rendering and UI interaction
-- `data.js` — Rounded snapshot data (50 models, 11 metrics)
+- `data.js` — Current snapshot and links to published figures
+- `archive-data.js` — October 28 snapshot with 50 configurations and 11 measurements
 - `.github/workflows/pages.yml` — GitHub Pages deployment workflow
 
 ## Publishing
@@ -30,11 +31,15 @@ A standalone, mobile-friendly interactive comparison of 50 model configurations 
 If deployment has not started, open **Settings → Pages → Build and deployment → Source → GitHub Actions**.
 The workflow deploys automatically on push to `main`, or it can be run manually in **Actions → Publish ModelScope to GitHub Pages → Run workflow**.
 
-## Data accuracy and limitations
+## November 6, 2026 snapshot
 
-Data is a **static snapshot** from the prior ChatGPT comparison and Artificial Analysis-referenced values, not a live API connection. Model costs and scores are rounded. Some benchmark fields are unavailable; unavailable values are excluded from those plots, never replaced with fabricated measurements. The frontier is computed over **visible models with reported values**, not the global model ecosystem.
+The current view contains **98 configurations from 22 model developers** with published Artificial Analysis Intelligence Index **v5.0.1** scores. Of these, 92 have a published cost per task and 71 have all nine component scores linked to the relevant source comparison. Missing measurements are blank in the data. The source links on each model distinguish its leaderboard profile from the detailed comparison.
 
-For latest original model measurements, check https://artificialanalysis.ai/.
+The X-axis uses published weighted USD cost per Intelligence Index task for every Y-axis metric. Published zero costs appear on the linear axis. The logarithmic axis requires positive costs. The frontier compares eligible configurations across the enabled families, including ties at the same cost and score. Zoom and pan change the viewport.
+
+The October snapshot remains available at `?suite=v4`. It uses Intelligence Index v4.3.2 and separate chart settings. The current view exports one selected model at a time and credits Artificial Analysis in the chart and CSV.
+
+[Published model leaderboard](https://artificialanalysis.ai/leaderboards/models) · [Intelligence Index scoring](https://artificialanalysis.ai/methodology/intelligence-benchmarking) · [Cost methodology](https://artificialanalysis.ai/evaluations/artificial-analysis-intelligence-index)
 
 ## October 28, 2026 — complete GPT-6.1 Terra family
 
@@ -84,14 +89,14 @@ The website's **39 plotted model configurations / 11 measurements** were reviewe
 
 ## Optional once-daily Artificial Analysis API updates
 
-The default website remains **fully functional from the original `data.js` snapshot**.
+The website loads from the checked-in `data.js` snapshot by default.
 A daily workflow in `.github/workflows/daily-update.yml` is ready and runs once
 per day. It uses the supported Free API endpoint
 `https://artificialanalysis.ai/api/v2/language/models/free`.
 
 **What can update:** only the overall Intelligence Index and the **Intelligence Index
-cost per task**, for uniquely and safely matched models in the existing 44-model list.
-The ten detailed benchmark scores are unchanged because the Free API does not provide them.
+cost per task**, for unique model-name matches and an API response that explicitly reports the snapshot's Index version.
+The overlay applies only to the snapshot date and version for which it was generated. The detailed benchmark scores come from the published snapshot.
 New models are not added automatically. This is an intentionally conservative integration.
 
 ### Prerequisites to activate public updates

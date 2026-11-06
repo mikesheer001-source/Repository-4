@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Update a public site's *basic* Artificial Analysis metrics when licensed.
 
-No external dependencies. Only updates the optional updates.js overlay.
-The existing 39-model snapshot and 10 component benchmarks are untouched.
+No external dependencies. Only updates the optional updates.js overlay for
+the same Intelligence Index version as the current snapshot.
 """
 import datetime as dt
 import json
@@ -39,7 +39,9 @@ def read_snapshot():
     data = json.loads(match.group(1))
     if not data.get("models") or not isinstance(data["models"], list):
         raise ValueError("Missing model array in snapshot.")
-    return data["models"]
+    if not data.get("as_of") or not data.get("index_version"):
+        raise ValueError("Missing date or Intelligence Index version in snapshot.")
+    return data
 
 
 def read_existing():
@@ -70,8 +72,11 @@ def fetch_models(api_key):
             body = json.load(response)
         if not isinstance(body, dict) or not isinstance(body.get("data"), list):
             raise ValueError("Unexpected API response; no update performed.")
-        if body.get("intelligence_index_version") is not None:
-            version = body["intelligence_index_version"]
+        page_version = body.get("intelligence_index_version")
+        if page_version is not None:
+            if version is not None and version != page_version:
+                raise ValueError("API pages disagree on the Intelligence Index version.")
+            version = page_version
         models.extend(body["data"])
         page_info = body.get("pagination") or {}
         if not page_info.get("has_more", False):
@@ -97,9 +102,9 @@ def build_overlay(snapshot, api_models):
         raw_cost = (cost_obj.get("cost_per_task") or {}).get("total_cost")
         raw_index = evaluation.get("artificial_analysis_intelligence_index")
         update = {}
-        if valid_number(raw_index, -100, 200):
+        if valid_number(raw_index, 0, 100):
             update["index"] = round(raw_index, 3)
-        if valid_number(raw_cost, 0.000001, 1000):
+        if valid_number(raw_cost, 0, 1000):
             update["cost"] = round(raw_cost, 6)
         if update:
             result[name] = update
@@ -112,14 +117,20 @@ def run(api_key):
     snapshot = read_snapshot()
     previous = read_existing()
     api_models, version = fetch_models(api_key)
-    overlay = build_overlay(snapshot, api_models)
-    if overlay == previous.get("models", {}) and version == previous.get("index_version"):
+    if version != snapshot["index_version"]:
+        print("API version missing or different from snapshot; update skipped.")
+        return False
+    overlay = build_overlay(snapshot["models"], api_models)
+    if (overlay == previous.get("models", {})
+            and version == previous.get("index_version")
+            and snapshot["as_of"] == previous.get("snapshot_as_of")):
         print("Values unchanged; no commit needed.")
         return False
     result = {
         "updated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "source": "Artificial Analysis V2 Free API",
         "index_version": version,
+        "snapshot_as_of": snapshot["as_of"],
         "models": overlay,
     }
     dest = ROOT / "updates.js"
@@ -128,7 +139,7 @@ def run(api_key):
         "window.AI_DAILY_UPDATES = " + json.dumps(result, ensure_ascii=False, separators=(",", ":")) + ";\n"
     )
     dest.write_text(content, encoding="utf-8")
-    print("Prepared update for", len(overlay), "of", len(snapshot), "snapshot models.")
+    print("Prepared update for", len(overlay), "of", len(snapshot["models"]), "snapshot models.")
     return True
 
 
