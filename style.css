@@ -65,3 +65,32 @@
 .table-model:focus-visible{outline:2px solid var(--blue);outline-offset:4px}
 #download-csv:disabled{opacity:.55;cursor:default}
 @media(max-width:600px){.methodology-weights{grid-template-columns:1fr}}
+
+.removal-panel{margin-bottom:17px;scroll-margin-top:12px}
+.removal-panel summary{cursor:pointer;min-height:28px;padding:3px 0}
+.removal-panel summary::marker{color:var(--blue)}
+.removal-panel summary strong{margin-left:5px}
+#removal-count{margin-left:10px;color:#9ac9f8;font-size:13px;white-space:nowrap}
+.removal-panel[open] summary{border-bottom:1px solid var(--border);padding-bottom:12px}
+.removal-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:12px}
+.removal-controls .search input{width:100%;max-width:none;min-width:0;font-size:16px}
+.removal-controls select,.removal-copy-area textarea{min-height:40px;min-width:0;padding:7px 10px;background:#0e1b2a;color:var(--text);border:1px solid #344960;border-radius:9px;font:inherit;font-size:16px}
+.removal-results{margin:7px 0}
+.removal-list{max-height:min(48vh,440px);overflow:auto;border:1px solid var(--border);border-radius:9px;background:#0e1b2a;padding:6px 12px}
+.removal-group{min-width:0;margin:8px 0 12px;padding:0;border:0}
+.removal-group legend{padding:2px 0 6px;color:#a8c9ed;font-weight:700;font-size:13px}
+.removal-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;border-top:1px solid var(--border)}
+.removal-row label{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 0;cursor:pointer}
+.removal-row label strong,.removal-row label small{display:block;overflow-wrap:anywhere}
+.removal-row label strong{font-size:13px}
+.removal-row label small{color:var(--muted);font-size:11px;margin-top:2px}
+.removal-row label .removal-added{color:#95cafa}
+.removal-row input{flex:none;width:19px;height:19px;margin:0;accent-color:var(--blue)}
+.removal-row a{padding:12px 0;color:#9ac9f8;font-size:12px;white-space:nowrap}
+.removal-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.removal-actions button{min-height:40px}
+.removal-actions button:disabled{opacity:.5;cursor:default}
+.removal-empty,.removal-copy-area label{color:var(--muted);font-size:13px}
+.removal-copy-area{margin-top:10px}
+.removal-copy-area textarea{display:block;width:100%;margin-top:4px;resize:vertical}
+@media(max-width:550px){.removal-controls{grid-template-columns:minmax(0,1fr)}}

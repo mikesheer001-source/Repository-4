@@ -444,4 +444,131 @@ const [a,b]=bounds(),w=(b-a)/z;update({zoom:z,start:clamp(anchor-ratio*w,a,b-w)}
 let resizeTimer=null;
 if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(drawChart,50);}).observe(plot);
 drawLegend();render();persist();
+
+function setupRemovalChecklist(){
+  const menu=el('model-removal'),list=el('removal-list'),search=el('removal-search'),filter=el('removal-filter');
+  const copy=el('removal-copy'),clear=el('removal-clear'),status=el('removal-status');
+  const copyArea=el('removal-copy-area'),copyField=el('removal-text');
+  const storageKey='modelscope-removal-selection';
+  const baseName=name=>name.toLowerCase().replace(/\bdefault fallback\b/g,'').replace(/[^a-z0-9]/g,'');
+  const octoberNames=new Set((window.AI_BENCHMARK_ARCHIVE?.models||[]).map(r=>baseName(r[0])));
+  const models=rows.map(r=>{
+    const source=payload.model_sources?.[r.name];
+    return {
+      name:r.name,family:r.family,developer:payload.creators?.[r.family]||r.family,
+      source,key:source||r.name,added:!octoberNames.has(baseName(r.name))
+    };
+  }).sort((a,b)=>a.developer.localeCompare(b.developer)||a.family.localeCompare(b.family)||a.name.localeCompare(b.name,undefined,{numeric:true}));
+  const keys=new Set(models.map(r=>r.key));
+  const marked=new Set();
+  try{
+    const saved=JSON.parse(localStorage.getItem(storageKey)||'[]');
+    if(Array.isArray(saved))saved.filter(key=>keys.has(key)).forEach(key=>marked.add(key));
+  }catch{}
+
+  const added=models.filter(r=>r.added).length;
+  el('removal-origin').textContent=added+' configurations were added to ModelScope since October. '+(models.length-added)+' also appeared in the October list.';
+  function showActions(){
+    el('removal-count').textContent=marked.size+' marked';
+    copy.disabled=clear.disabled=marked.size===0;
+    copyArea.hidden=true;
+    status.textContent='';
+  }
+  function saveMarks(){
+    try{localStorage.setItem(storageKey,JSON.stringify([...marked]));}catch{}
+    showActions();
+  }
+  function showModels(){
+    const query=search.value.trim().toLowerCase();
+    const mode=filter.value;
+    const shown=models.filter(r=>{
+      if(![r.name,r.developer,r.family].some(text=>text.toLowerCase().includes(query)))return false;
+      if(mode==='added')return r.added;
+      if(mode==='previous')return !r.added;
+      if(mode==='marked')return marked.has(r.key);
+      return true;
+    });
+    el('removal-results').textContent=shown.length+' of '+models.length+' configurations shown';
+    list.replaceChildren();
+    if(!shown.length){
+      const message=document.createElement('p');
+      message.className='removal-empty';
+      message.textContent=mode==='marked'&&!marked.size?'Check models to build your removal list.':'No configurations match these filters.';
+      list.append(message);
+      return;
+    }
+    const groups=new Map();
+    for(const r of shown){
+      if(!groups.has(r.developer)){
+        const group=document.createElement('fieldset');
+        group.className='removal-group';
+        const heading=document.createElement('legend');
+        heading.textContent=r.developer;
+        group.append(heading);
+        list.append(group);
+        groups.set(r.developer,group);
+      }
+      const row=document.createElement('div');
+      row.className='removal-row';
+      const label=document.createElement('label');
+      const box=document.createElement('input');
+      box.type='checkbox';box.value=r.key;box.checked=marked.has(r.key);
+      const description=document.createElement('span');
+      const name=document.createElement('strong');
+      name.textContent=r.name;
+      const origin=document.createElement('small');
+      origin.className=r.added?'removal-added':'';
+      origin.textContent=r.added?'Added to ModelScope':'In October list';
+      description.append(name,origin);
+      label.append(box,description);
+      row.append(label);
+      if(r.source){
+        const link=document.createElement('a');
+        link.href=r.source;link.target='_blank';link.rel='noopener noreferrer';
+        link.textContent='Source ↗';
+        link.setAttribute('aria-label','Artificial Analysis source for '+r.name);
+        row.append(link);
+      }
+      groups.get(r.developer).append(row);
+    }
+  }
+  list.addEventListener('change',({target})=>{
+    if(!keys.has(target.value))return;
+    if(target.checked)marked.add(target.value);
+    else marked.delete(target.value);
+    saveMarks();
+    if(filter.value==='marked')showModels();
+  });
+  function applyFilter(){
+    showModels();
+    list.scrollTop=0;
+  }
+  search.addEventListener('input',applyFilter);
+  filter.addEventListener('change',applyFilter);
+  clear.addEventListener('click',()=>{
+    marked.clear();
+    saveMarks();
+    showModels();
+  });
+  const selectedText=()=>models.filter(r=>marked.has(r.key)).map(r=>r.name).join('\n');
+  copy.addEventListener('click',async()=>{
+    const text=selectedText();
+    if(!text)return;
+    let copied=false;
+    try{
+      await navigator.clipboard.writeText(text);
+      copied=true;
+    }catch{}
+    if(text!==selectedText())return;
+    copyField.value=text;
+    copyArea.hidden=false;
+    status.textContent=copied?'Copied. Paste the list into the chat.':'Copy the text below and paste it into the chat.';
+    if(!copied){copyField.focus();copyField.select();}
+  });
+  showActions();
+  showModels();
+  menu.hidden=false;
+  if(location.hash==='#model-removal')menu.open=true;
+}
+if(!archive)setupRemovalChecklist();
 })();

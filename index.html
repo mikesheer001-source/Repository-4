@@ -6,11 +6,11 @@
 <meta name="theme-color" content="#0b1220">
 <meta name="description" content="Compare current AI models on Artificial Analysis Intelligence Index v5.0.1, its component benchmarks, and cost per task.">
 <title>AI Benchmark Explorer — Intelligence vs Cost</title>
-<link rel="stylesheet" href="./style.css?v=20261106">
+<link rel="stylesheet" href="./style.css?v=20261106-removal">
 <script defer src="./data.js?v=20261106"></script>
 <script defer src="./archive-data.js?v=20261028"></script>
 <script defer src="./updates.js?v=20261106"></script>
-<script defer src="./app.js?v=20261106"></script>
+<script defer src="./app.js?v=20261106-removal"></script>
 </head>
 <body>
 <header class="site-header">
@@ -27,6 +27,31 @@
       <div class="data-tile"><span>Visible models</span><strong id="visible-count">—</strong><small id="visible-label"></small></div>
     </div>
   </section>
+  <details class="panel removal-panel" id="model-removal" hidden>
+    <summary><strong>Choose models to remove</strong><span id="removal-count" role="status">0 marked</span></summary>
+    <p class="panel-intro">Check the configurations you want removed, then copy the list and paste it into the chat. Your selections are saved in this browser.</p>
+    <p class="panel-intro"><span id="removal-origin"></span> Each reasoning effort has its own entry. <a class="detail-link" href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis leaderboard ↗</a></p>
+    <div class="removal-controls">
+      <label class="search"><span aria-hidden="true">⌕</span><input id="removal-search" type="search" placeholder="Search models or developers" aria-label="Search models or developers" autocomplete="off"></label>
+      <select id="removal-filter" aria-label="Filter models by origin or selection">
+        <option value="all">All configurations</option>
+        <option value="added">Added since October</option>
+        <option value="previous">In the October list</option>
+        <option value="marked">Marked for removal</option>
+      </select>
+    </div>
+    <p class="filter-summary removal-results" id="removal-results"></p>
+    <div class="removal-list" id="removal-list" role="region" aria-label="Model removal checkboxes" tabindex="0"></div>
+    <div class="removal-actions">
+      <button class="pill-primary" type="button" id="removal-copy" disabled>Copy removal list</button>
+      <button class="subtle-button" type="button" id="removal-clear" disabled>Clear selection</button>
+      <span class="filter-summary" id="removal-status" role="status"></span>
+    </div>
+    <div class="removal-copy-area" id="removal-copy-area" hidden>
+      <label for="removal-text">Selected models</label>
+      <textarea id="removal-text" rows="4" readonly></textarea>
+    </div>
+  </details>
   <section class="chatgpt-modes" aria-label="ChatGPT GPT-6 modes">
     <div class="modes-header">
       <div><span class="section-kicker">CHATGPT / GPT-6</span><h2>Instant, Medium &amp; High</h2></div>
