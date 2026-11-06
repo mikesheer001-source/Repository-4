@@ -283,14 +283,33 @@ metricHolder.append(btn);
 function drawFamilies(){
 familyHolder.replaceChildren();
 const hidden=new Set(state.hidden);
-families.forEach(f=>{
+const groups=new Map(['ChatGPT','Anthropic','Gemini','Miscellaneous'].map(label=>[label,[]]));
+for(const family of families){
+  const creator=payload.creators?.[family];
+  const group=creator==='OpenAI'||family.startsWith('GPT-')?'ChatGPT':
+    creator==='Anthropic'||family.startsWith('Claude ')?'Anthropic':
+    family.startsWith('Gemini ')?'Gemini':'Miscellaneous';
+  groups.get(group).push(family);
+}
+for(const [label,members] of groups){
+  if(!members.length)continue;
+  const column=document.createElement('div');
+  column.className='family-column';
+  column.setAttribute('role','group');
+  column.setAttribute('aria-label',label);
+  const heading=document.createElement('h3');
+  heading.textContent=label;
+  column.append(heading);
+  familyHolder.append(column);
+  members.sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})).forEach(f=>{
 const btn=document.createElement('button'),dot=document.createElement('span'),text=document.createElement('span'),x=document.createElement('span');
 btn.type='button';btn.className='family-button'+(hidden.has(f)?' hidden':'');btn.setAttribute('aria-pressed',String(!hidden.has(f)));
 dot.className='family-dot';dot.style.background=familyColor(f);text.textContent=f+' ('+rows.filter(r=>r.family===f).length+')';x.className='family-x';x.textContent=hidden.has(f)?'↺':'×';
 btn.append(dot,text,x);
 btn.addEventListener('click',()=>update({hidden:hidden.has(f)?state.hidden.filter(n=>n!==f):[...state.hidden,f]}));
-familyHolder.append(btn);
-});
+column.append(btn);
+  });
+}
 el('filter-summary').textContent=(families.length-state.hidden.length)+' / '+families.length+' families shown';
 }
 function drawLegend(){
